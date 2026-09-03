@@ -98,13 +98,13 @@ varied meaningfully between types.
 
 The queries the product actually runs, taken from the requirements:
 
-| The product needs                         | The lookup                         |
-| ----------------------------------------- | ---------------------------------- |
-| My requests (FR9)                         | requester → requests, newest first |
-| Department open queue (FR10)              | department + open states           |
-| One request with history (FR11, AC6)      | request → events ordered by time   |
-| Unassigned requests in a department (FR4) | department + no active assignment  |
-| What needs my approval (FR8)              | approver → pending approvals       |
+| The product needs                   | The lookup                         |
+| ----------------------------------- | ---------------------------------- |
+| My requests                         | requester → requests, newest first |
+| Department open queue               | department + open states           |
+| One request with history            | request → events ordered by time   |
+| Unassigned requests in a department | department + no active assignment  |
+| What needs my approval              | approver → pending approvals       |
 
 Indexes, only where a named pattern pays for one:
 
