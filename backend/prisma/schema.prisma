@@ -1,0 +1,63 @@
+// Data model from docs/data-model.md, narrowed to what the v0.3 slice needs.
+//
+// Employee, ServiceRequest and StatusEvent only. Department, RequestType,
+// Assignment, Approval and Comment are in the Week 1 model but are not part of
+// this slice, so they are not tables yet.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id           String @id
+  name         String
+  departmentId String
+  // REQUESTER or HANDLER. The authorization rule reads this.
+  role         String
+
+  requests ServiceRequest[] @relation("requester")
+}
+
+model ServiceRequest {
+  id    String @id @default(cuid())
+  title String
+
+  // Current status. The event log below is the truth; this field is the
+  // convenience read, written only together with its event.
+  status String
+
+  requesterId String
+  requester   Employee @relation("requester", fields: [requesterId], references: [id])
+
+  // The owning department. The authorization rule compares against this.
+  departmentId String
+
+  createdAt DateTime      @default(now())
+  history   StatusEvent[]
+
+  // Access pattern from data-model.md: "my requests", newest first.
+  @@index([requesterId, createdAt])
+  // Access pattern: the department queue.
+  @@index([departmentId, status])
+}
+
+model StatusEvent {
+  id String @id @default(cuid())
+
+  requestId String
+  request   ServiceRequest @relation(fields: [requestId], references: [id])
+
+  // Null on the event that created the request.
+  from       String?
+  to         String
+  changedBy  String
+  occurredAt DateTime @default(now())
+
+  // Access pattern: one request's history, in order.
+  @@index([requestId, occurredAt])
+}
